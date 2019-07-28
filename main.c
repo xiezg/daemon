@@ -3,7 +3,7 @@
  # Author: xiezg
  # Mail: xzghyd2008@hotmail.com 
  # Created Time: 2019-07-28 11:36:53
- # Last modified: 2019-07-28 11:45:45
+ # Last modified: 2019-07-28 12:38:13
  ************************************************************************/
 
 #include <stdlib.h>
@@ -65,10 +65,6 @@ RESTART_WORK_PROCESS:
     goto RESTART_WORK_PROCESS;
 
 WORKER_PROCESS:
-    if( prctl(PR_SET_PDEATHSIG, SIGTERM) == -1 ){
-        fprintf( stderr, "work process PR_SET_PDEATHSIG SIGTERM. errno:%d errmsg:%s\n", errno, strerror( errno ) );
-    }
-
     execl( "dbbak", "dbbak", "-mode", "http", NULL );
 
     fprintf( stderr, "work process execl[%s] failed. errno:%d errmsg:%s\n", "docsafe-master", errno, strerror( errno ) );
