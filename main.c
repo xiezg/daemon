@@ -3,7 +3,7 @@
  # Author: xiezg
  # Mail: xzghyd2008@hotmail.com 
  # Created Time: 2019-07-28 11:36:53
- # Last modified: 2019-07-28 12:38:13
+ # Last modified: 2019-08-12 19:03:07
  ************************************************************************/
 
 #include <stdlib.h>
@@ -18,12 +18,6 @@
 #include <fcntl.h>
 
 #define DOCSAFE_LOG_FILE_PATH "../logs/daemon/daemon.log"
-
-#define WRITE_PID_TO_FILE()\
-    FILE * fp_pidfile;\
-    fp_pidfile = fopen( "/var/run/ddr.pid", "w" );\
-    fprintf( fp_pidfile, "%d\n", getpid() );\
-    fclose( fp_pidfile );
 
 int main( int argc, char** argv ){
 
@@ -42,8 +36,6 @@ int main( int argc, char** argv ){
 
     dup2( fd, STDOUT_FILENO );
     dup2( fd, STDERR_FILENO );
-
-    WRITE_PID_TO_FILE();
 
 RESTART_WORK_PROCESS:
     if( ( pid = fork() )== -1 ){
