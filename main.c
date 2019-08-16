@@ -3,7 +3,7 @@
  # Author: xiezg
  # Mail: xzghyd2008@hotmail.com 
  # Created Time: 2019-07-28 11:36:53
- # Last modified: 2019-08-12 19:03:07
+ # Last modified: 2019-08-16 11:39:39
  ************************************************************************/
 
 #include <stdlib.h>
@@ -16,13 +16,21 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
+#define DBBAK_CONFIG_PATH "../conf/config.ini"
 #define DOCSAFE_LOG_FILE_PATH "../logs/daemon/daemon.log"
 
 int main( int argc, char** argv ){
 
     int fd = -1;
     pid_t pid = -1;
+
+    if( ( mkdir( "../logs/http", 0755 ) == -1 ) && ( errno != EEXIST ) ){
+        fprintf( stderr, "mkdir  [../logs/http] failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
+        return -1;
+    }
 
     if ( ( fd = open( DOCSAFE_LOG_FILE_PATH, O_RDWR|O_CREAT|O_APPEND, 0644 ) ) == -1 ){
         fprintf( stderr, "open [%s] failed. errno:%d errmsg:%s\n", DOCSAFE_LOG_FILE_PATH, errno, strerror(errno) );
@@ -57,7 +65,7 @@ RESTART_WORK_PROCESS:
     goto RESTART_WORK_PROCESS;
 
 WORKER_PROCESS:
-    execl( "dbbak", "dbbak", "-mode", "http", NULL );
+    execl( "dbbak", "dbbak", "-mode", "http", "-v=10", "-log_dir=../logs/http/",  NULL );
 
     fprintf( stderr, "work process execl[%s] failed. errno:%d errmsg:%s\n", "docsafe-master", errno, strerror( errno ) );
 
