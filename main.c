@@ -3,7 +3,7 @@
  # Author: xiezg
  # Mail: xzghyd2008@hotmail.com 
  # Created Time: 2019-07-28 11:36:53
- # Last modified: 2019-08-16 11:39:39
+ # Last modified: 2019-08-18 14:22:15
  ************************************************************************/
 
 #include <stdlib.h>
@@ -37,17 +37,14 @@ int main( int argc, char** argv ){
         return -1;
     }
 
-    if( daemon( 1, 1 ) == -1 ){
-        fprintf( stderr, "daemon failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
+    if( daemon( 1, 0 ) == -1 ){
+        dprintf( fd, "daemon failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
         return -1;
     }
 
-    dup2( fd, STDOUT_FILENO );
-    dup2( fd, STDERR_FILENO );
-
 RESTART_WORK_PROCESS:
     if( ( pid = fork() )== -1 ){
-        fprintf( stderr, "fork workprocess failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
+        dprintf( fd, "fork workprocess failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
         return -1;
     }
 
@@ -56,18 +53,18 @@ RESTART_WORK_PROCESS:
     }
 
     if( ( pid = wait( NULL ) ) == -1 ){
-        fprintf( stderr, "master process wait failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
+        dprintf( fd, "master process wait failed. errno:%d errmsg:%s\n", errno, strerror(errno) );
         exit(-1);
     }
 
-    fprintf( stderr, "work process quit\n" );
+    dprintf( fd, "work process quit\n" );
     sleep( 5 );
     goto RESTART_WORK_PROCESS;
 
 WORKER_PROCESS:
     execl( "dbbak", "dbbak", "-mode", "http", "-v=10", "-log_dir=../logs/http/",  NULL );
 
-    fprintf( stderr, "work process execl[%s] failed. errno:%d errmsg:%s\n", "docsafe-master", errno, strerror( errno ) );
+    dprintf( fd, "work process execl[%s] failed. errno:%d errmsg:%s\n", "docsafe-master", errno, strerror( errno ) );
 
     return 0;
 }
